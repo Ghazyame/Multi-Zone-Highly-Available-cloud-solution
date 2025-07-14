@@ -13,35 +13,39 @@ All project documents including the full report and presentation can be accessed
 Contents:
 - 📝 Technical Report (PDF)
 - 📊 Presentation Slides (PPTX)
-- 💡 Test Case Demonstration Videos
+- 🎥 Test Case Demonstration Videos
 - 📈 Cost Breakdown & Analysis
 
 ---
 
 ## ⚙️ Infrastructure Overview
 
-This project uses **Infrastructure as Code** (IaC) via **AWS CloudFormation** to deploy:
-- Multi-zone EC2 instances
-- Public subnets across AZs
-- Application Load Balancer
-- Route 53 DNS failover
-- Auto Scaling Group
-- Security Groups and Internet Gateway
+This project uses **Infrastructure as Code** (IaC) via **AWS CloudFormation** to deploy a multi-zone architecture across two regions:
 
-📄 CloudFormation template: `cloudformation/Frankfurt Region.yaml` `cloudformation/Paris Region.yaml`
+### 📂 CloudFormation Templates
+- `cloudformation/Frankfurt Region.yaml` – Deploys infrastructure in **eu-central-1 (Frankfurt)**
+- `cloudformation/Paris Region.yaml` – Deploys infrastructure in **eu-west-3 (Paris)**
+
+Each stack sets up:
+- EC2 instances across Availability Zones
+- VPCs, subnets, internet gateways, and route tables
+- Application Load Balancer and Target Groups
+- Route 53 DNS health checks and failover policies
+- Auto Scaling Groups and CloudWatch alarms
 
 ---
 
 ## 🧪 Test Scenarios
 
-Two test cases were conducted to validate availability:
-1. **Active-Active Architecture**
-   - EC2 failure simulated in one AZ
-   - Load balancer redirects traffic automatically
-2. **Active-Passive Architecture**
-   - Primary instance failure triggers Route 53 DNS failover to standby
+Two high availability configurations were validated:
 
-🎬 Demo videos included in the Google Drive link.
+1. **Active-Active Architecture**
+   - Simulated EC2 failure in Frankfurt (AZ1)
+   - Load balancer automatically redirected traffic
+2. **Active-Passive Architecture**
+   - Primary instance failure in Paris triggered Route 53 DNS failover to backup
+
+🎬 Video demos for both scenarios are available in the linked Google Drive folder.
 
 ---
 
@@ -52,7 +56,7 @@ Two test cases were conducted to validate availability:
 | Active-Active    | Real-time failover  | ~$270                |
 | Active-Passive   | DNS failover        | ~$33                 |
 
-For more details, check the Excel file in the `/docs` folder or the linked Drive folder.
+For detailed calculations, see the cost breakdown Excel sheet in the Google Drive.
 
 ---
 
@@ -61,29 +65,39 @@ For more details, check the Excel file in the `/docs` folder or the linked Drive
 - **Amazon EC2**
 - **Amazon Route 53**
 - **Elastic Load Balancing (ALB)**
-- **AWS CloudFormation**
+- **AWS CloudFormation (IaC)**
 - **Amazon CloudWatch**
-- **CloudFront** (optional performance optimization)
+- **Amazon CloudFront** (for performance optimization)
 
 ---
 
-## 📷 Diagrams & Architecture
+## 📷 Architecture & Diagrams
 
-System design and flow diagrams can be found in the `/Project Documentation` directory.
+System design diagrams (if available) can be found in the `/assets` folder.
 
-![Architecture](assets/architecture-diagram.png)
+---
 
+## 🏁 How to Deploy
+
+To deploy either stack:
+
+1. Open the AWS Console
+2. Navigate to **CloudFormation > Create stack**
+3. Upload either:
+   - `cloudformation/Frankfurt Region.yaml` *(for eu-central-1)*
+   - `cloudformation/Paris Region.yaml` *(for eu-west-3)*
+4. Provide any required parameters
+5. Monitor progress under the **Events** tab
+
+---
 
 ## 📬 Contact
 
-If you'd like to discuss the implementation or collaborate:
-
-- 📧 Email: [ghazy.ame@gmail.com]
-- 💼 LinkedIn: [www.linkedin.com/in/ghazyame](www.linkedin.com/in/ghazyame)
+- 📧 Email: [Ghazy.ame@gmail.com](mailto:Ghazy.ame@gmail.com)  
+- 💼 LinkedIn: [www.linkedin.com/in/ghazyame](https://www.linkedin.com/in/ghazyame)
 
 ---
 
 ## 📜 License
 
-This project is for learning and demonstration purposes only. All content is original and authored independently.
-
+This project is provided for learning and demonstration purposes. Please credit the author if you reference or reuse it.
