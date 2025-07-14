@@ -1,0 +1,264 @@
+Description:  This template deploys a VPC, with two public subnets spread across two Availability Zones. It deploys an internet gateway, with an ALB.
+
+#Parameters used for referencing
+Parameters:
+  EnvironmentName: 
+    Description: Week 7 
+    Type: String
+
+  Vpc1CIDR:
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.0.0.0/16
+
+  PublicSubnet1CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
+    Type: String
+    Default: 10.0.1.0/24
+
+  PublicSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
+    Type: String
+    Default: 10.0.2.0/24
+
+#Create our VPC
+Resources:
+  VPC1:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref Vpc1CIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: week 7 VPC1
+          
+  InternetGateway1:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Week 7 IGW1
+
+  InternetGatewayAttachment1:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway1
+      VpcId: !Ref VPC1
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC1
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (1a) (AZ1)
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC1
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (1b) (AZ2)
+
+#Setup Route table and assign IP routes
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC1
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Routes
+
+  DefaultPublicRoute1:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment1
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway1
+
+  PublicSubnet1RouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      SubnetId: !Ref PublicSubnet1
+
+  PublicSubnet2RouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      SubnetId: !Ref PublicSubnet2
+
+
+#Setup Ingress Security Group
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "Week7"
+      GroupDescription: "Allow SSH and HTTP and HTTPS"
+      VpcId: !Ref VPC1
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0 
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Allow SSH HTTP HTTPS
+
+#Setup Launch Template
+  Week7LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: Week7AutoScaling
+      LaunchTemplateData:
+        ImageId: ami-03216a20ecc5d72ee
+        InstanceType: t2.micro 
+        NetworkInterfaces: 
+          - DeviceIndex: 0
+            AssociatePublicIpAddress: true
+            Groups:
+              - !Ref WebServerSecurityGroup
+        UserData: 
+          Fn::Base64: !Sub |
+              #!/bin/bash
+              sudo yum update -y
+              sudo amazon-linux-extras install epel -y
+              sudo yum install stress -y
+              sudo yum install -y httpd
+              sudo systemctl start httpd
+              sudo systemctl enable httpd
+              echo "<h1>Ain-Shams University</h1>
+                    <h2>Project Name: Multi-Zone High Availability Cloud Solution</h2>
+                    <p>This Project is supervised by: Dr. Wagdy Anis</p>
+                    <p>Presented By: Abdelrahman Ghazy</p>
+                    <p>from: $(hostname -f)</p>" > /var/www/html/index.html
+#Create AutoScaling
+  AutoScalingGroup:
+   Type: AWS::AutoScaling::AutoScalingGroup
+   Properties:
+    MinSize: 2
+    MaxSize: 4
+    DesiredCapacity: 2
+    LaunchTemplate:
+      LaunchTemplateId: !Ref Week7LaunchTemplate
+      Version: !GetAtt Week7LaunchTemplate.LatestVersionNumber
+    HealthCheckType: ELB
+    VPCZoneIdentifier:
+      - !Ref PublicSubnet1
+      - !Ref PublicSubnet2
+    TargetGroupARNs:
+      - !Ref ALBTargetGroups
+    
+
+#Policy used to track CPU usage for autoscaling
+  cpuUsage:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref AutoScalingGroup
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: 50 
+  ScalingPolicy:
+    Type: 'AWS::AutoScaling::ScalingPolicy'
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref AutoScalingGroup
+      ScalingAdjustment: '1'
+
+# cloudwatch alarm for cpu more than 50%      
+  CloudWatchAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      EvaluationPeriods: '1'
+      Statistic: Average
+      Threshold: '50'
+      AlarmDescription: Alarm if CPU higher than 50%
+      Period: '60'
+      AlarmActions:
+        - !Ref ScalingPolicy
+      Namespace: AWS/EC2
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value:
+            Ref: AutoScalingGroup
+      ComparisonOperator: GreaterThanThreshold
+      MetricName: CPUUtilization
+
+#Create Targetgroup
+  ALBTargetGroups:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VPC1
+      TargetType: instance
+      HealthCheckPath: /index.html
+      Port: 80
+      Protocol: HTTP
+      Tags:
+        - Key: Name
+          Value: Week7Project2TG
+
+#Create ALB
+  Week7ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      SecurityGroups:
+      - !Ref WebServerSecurityGroup
+      Subnets: 
+      - !Ref PublicSubnet1
+      - !Ref PublicSubnet2
+      Tags:
+        - Key: Name
+          Value: Week7Project2ALB
+
+#Create ALB listener
+  Week7ALBlistener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBTargetGroups
+      LoadBalancerArn: !Ref Week7ALB
+
+Outputs:
+  VPC1:
+    Description: A reference to the created VPC
+    Value: !Ref VPC1
+  
+  PublicSubnets:
+    Description: A list of the public subnets
+    Value: !Join [ ",", [ !Ref PublicSubnet1, !Ref PublicSubnet2 ]]
+
+  PublicSubnet1:
+    Description: A reference to the public subnet in the 1st Availability Zone
+    Value: !Ref PublicSubnet1
+
+  PublicSubnet2:
+    Description: A reference to the public subnet in the 2nd Availability Zone
+    Value: !Ref PublicSubnet2
+
+  WebServerSecurityGroup:
+    Description: Security group with ingress rule
+    Value: !Ref WebServerSecurityGroup
