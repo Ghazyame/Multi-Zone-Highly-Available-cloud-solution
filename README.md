@@ -79,7 +79,7 @@ System design and flow diagrams can be found in the `/Project Documentation` dir
 If you'd like to discuss the implementation or collaborate:
 
 - 📧 Email: [ghazy.ame@gmail.com]
-- 💼 LinkedIn: [linkedin.com/in/ghazy.ame](https://www.linkedin.com/in/ghazy.ame)
+- 💼 LinkedIn: [www.linkedin.com/in/ghazyame](www.linkedin.com/in/ghazyame)
 
 ---
 
