@@ -28,7 +28,7 @@ This project uses **Infrastructure as Code** (IaC) via **AWS CloudFormation** to
 - Auto Scaling Group
 - Security Groups and Internet Gateway
 
-📄 CloudFormation template: `cloudformation/high-availability-stack.yaml`
+📄 CloudFormation template: `cloudformation/Frankfurt.yaml`
 
 ---
 
