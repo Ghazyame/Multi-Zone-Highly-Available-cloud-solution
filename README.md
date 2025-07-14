@@ -1,4 +1,5 @@
-# ☁️ Multi-Zone High Availability Cloud Solution on AWS (Web Application)
+# ☁️ Multi-Zone High Availability Cloud Solution on AWS
+
 This project demonstrates the design, deployment, and validation of a highly available cloud infrastructure using **Amazon Web Services (AWS)**. It features fault tolerance, resilience, and cost-aware architecture across multiple availability zones.
 
 ---
@@ -25,12 +26,14 @@ This project uses **Infrastructure as Code** (IaC) via **AWS CloudFormation** to
 - `cloudformation/Frankfurt Region.yaml` – Deploys infrastructure in **eu-central-1 (Frankfurt)**
 - `cloudformation/Paris Region.yaml` – Deploys infrastructure in **eu-west-3 (Paris)**
 
-Each stack sets up:
+Each template provisions:
+- VPC, subnets, internet gateways, and route tables
 - EC2 instances across Availability Zones
-- VPCs, subnets, internet gateways, and route tables
 - Application Load Balancer and Target Groups
-- Route 53 DNS health checks and failover policies
-- Auto Scaling Groups and CloudWatch alarms
+- Auto Scaling Group and CloudWatch alarms
+
+> ⚠️ **Note:**  
+> The setup and configuration for **Amazon Route 53 (DNS failover)** and **Amazon CloudFront (content distribution)** were performed **manually via the AWS Console** and are **not included** in the CloudFormation templates.
 
 ---
 
@@ -42,9 +45,9 @@ Two high availability configurations were validated:
    - Simulated EC2 failure in Frankfurt (AZ1)
    - Load balancer automatically redirected traffic
 2. **Active-Passive Architecture**
-   - Primary instance failure in Paris triggered Route 53 DNS failover to backup
+   - Primary instance failure in Paris triggered Route 53 DNS failover to a secondary instance
 
-🎬 Video demos for both scenarios are available in the linked Google Drive folder.
+🎬 Video demonstrations of both scenarios are included in the Google Drive folder.
 
 ---
 
@@ -55,38 +58,38 @@ Two high availability configurations were validated:
 | Active-Active    | Real-time failover  | ~$270                |
 | Active-Passive   | DNS failover        | ~$33                 |
 
-For detailed calculations, see the cost breakdown Excel sheet in the Google Drive.
+Detailed cost comparisons and usage calculations are included in the cost analysis spreadsheet.
 
 ---
 
 ## 🧰 Technologies Used
 
 - **Amazon EC2**
-- **Amazon Route 53**
+- **Amazon Route 53** *(manual setup)*
 - **Elastic Load Balancing (ALB)**
-- **AWS CloudFormation (IaC)**
+- **AWS CloudFormation**
 - **Amazon CloudWatch**
-- **Amazon CloudFront** (for performance optimization)
+- **Amazon CloudFront** *(manual setup)*
 
 ---
 
 ## 📷 Architecture & Diagrams
 
-System design diagrams can be found in the 📂 **[Project Documents – Google Drive](https://drive.google.com/drive/folders/1s4RSTehuofoVeQBZXWMzj24U16M1cu-F?usp=drive_link)**.
+System diagrams and test environment screenshots are located in 📂 **[Project Documents – Google Drive](https://drive.google.com/drive/folders/1s4RSTehuofoVeQBZXWMzj24U16M1cu-F?usp=drive_link)**.
 
 ---
 
 ## 🏁 How to Deploy
 
-To deploy either stack:
+To deploy the infrastructure using CloudFormation:
 
 1. Open the AWS Console
-2. Navigate to **CloudFormation > Create stack**
-3. Upload either:
-   - `cloudformation/Frankfurt Region.yaml` *(for eu-central-1)*
-   - `cloudformation/Paris Region.yaml` *(for eu-west-3)*
-4. Provide any required parameters
-5. Monitor progress under the **Events** tab
+2. Go to **CloudFormation > Create stack**
+3. Upload one of the templates:
+   - `cloudformation/Frankfurt Region.yaml`
+   - `cloudformation/Paris Region.yaml`
+4. Follow the prompts to complete deployment
+5. Configure **Route 53** and **CloudFront** manually after stack creation (as per the report and presentation)
 
 ---
 
@@ -99,4 +102,4 @@ To deploy either stack:
 
 ## 📜 License
 
-This project is provided for learning and demonstration purposes. Please credit the author if you reference or reuse it.
+This project is provided for educational and demonstration purposes. Please credit the author if reused.
