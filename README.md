@@ -6,8 +6,7 @@ This repository contains my Bachelor Thesis project for the Computer Engineering
 You can find the thesis PDF under `/thesis`:
 - **Title:** Multi-Zone High Availability Cloud Solution
 - **Author:** Abdelrahman Mohamed Ghazy
-- **Supervisor:** Dr. Wagdy Anis Aziz
-- **Date:** June 2025
+- **Date:** July 2025
 
 ## 🚀 Overview
 This project presents the design and implementation of a fault-tolerant multi-zone cloud architecture using Amazon Web Services (AWS). It explores:
