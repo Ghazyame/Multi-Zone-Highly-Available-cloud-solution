@@ -72,7 +72,7 @@ For detailed calculations, see the cost breakdown Excel sheet in the Google Driv
 
 ## 📷 Architecture & Diagrams
 
-System design diagrams (if available) can be found in the `/assets` folder.
+System design diagrams can be found in the 📂 **[Project Documents – Google Drive](https://drive.google.com/drive/folders/1s4RSTehuofoVeQBZXWMzj24U16M1cu-F?usp=drive_link)**.
 
 ---
 
