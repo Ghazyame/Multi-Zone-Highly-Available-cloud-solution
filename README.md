@@ -1,4 +1,4 @@
-# ☁️ Multi-Zone High Availability Cloud Solution on AWS
+# ☁️ Multi-Zone High Availability Cloud Solution on (AWS Web Application)
 
 This project demonstrates the design, deployment, and validation of a highly available cloud infrastructure using **Amazon Web Services (AWS)**. It features fault tolerance, resilience, and cost-aware architecture across multiple availability zones.
 
