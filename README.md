@@ -75,7 +75,7 @@ Detailed cost comparisons and usage calculations are included in the cost analys
 
 ## 📷 Architecture & Diagrams
 
-System diagrams and test environment screenshots are located in ![Architecture Diagram](Diagrams/Design.png)
+ ![Architecture Diagram](Diagrams/Design.png)
 🖼️ Architecture Diagram: Multi-Region High Availability Web Application
 The diagram showcases the deployment architecture of a highly available web application across two AWS regions: Frankfurt (eu-central-1) and Paris (eu-west-3), designed to ensure fault tolerance, scalability, and continuous availability.
 
