@@ -69,30 +69,17 @@ For more details, check the Excel file in the `/docs` folder or the linked Drive
 
 ## 📷 Diagrams & Architecture
 
-System design and flow diagrams can be found in the `/assets` directory.
+System design and flow diagrams can be found in the `/Project Documentation` directory.
 
 ![Architecture](assets/architecture-diagram.png)
 
----
-
-## 🏁 How to Deploy
-
-To deploy the infrastructure using the provided CloudFormation template:
-
-1. Log in to your AWS Console
-2. Go to **CloudFormation > Create stack**
-3. Upload `cloudformation/high-availability-stack.yaml`
-4. Follow the prompts and parameters
-5. Monitor the deployment under "Events" tab
-
----
 
 ## 📬 Contact
 
 If you'd like to discuss the implementation or collaborate:
 
-- 📧 Email: [your.email@example.com]
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/yourprofile)
+- 📧 Email: [ghazy.ame@gmail.com]
+- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/ghazy.ame)
 
 ---
 
